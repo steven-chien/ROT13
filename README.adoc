@@ -1,0 +1,29 @@
+= Linux System Programming - Rotate by 13 places (ROT13)
+A small program that performs rotate by 13 places ``encryption''.
+
+== Usage
+----
+Usage: ROT13 [OPTION...] [FILE...]
+ROT13 -- Rotate by 13 places encryption
+
+  -r, --reverse              Reverse shift (right shift).
+  -s, --shift=AMOUNT         Shift by this AMOUNT. (default 13)
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
+  -V, --version              Print program version
+
+Mandatory or optional arguments to long options are also mandatory or optional
+for any corresponding short options.
+
+Report bugs to Star Poon <oneonestar@gmail.com>.
+----
+
+== Compile & Run
+[source,bash]
+----
+$ git clone https://github.com/oneonestar/LSP_ROT13.git
+$ cd LSP_ROT13
+$ mkdir build
+$ cmake ..
+$ make
+$ ./ROT13
