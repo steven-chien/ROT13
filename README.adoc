@@ -17,6 +17,7 @@ for any corresponding short options.
 
 Report bugs to Star Poon <oneonestar@gmail.com>.
 ----
+TIP: With no FILE, or when FILE is -, read standard input.
 
 == Compile & Run
 [source,bash]
