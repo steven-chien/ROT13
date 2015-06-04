@@ -1,5 +1,3 @@
-# uppercaser - making everything LOUD
-
 This application takes data on *stdin*, converts it to upper case and then prints the output to *stdout*
 
 Note: The reason we can compare to 'z' and so forth is because ASCII is designed in such a way that
