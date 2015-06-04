@@ -46,11 +46,11 @@ const char *argp_program_bug_address =
 static char doc[] =
   "ROT13 -- Rotate by 13 places encryption";
 
+static char args_doc[] = "[FILE...]";
+
 static struct argp_option options[] = {
         {"shift",   's',    "AMOUNT",      0,  "Shift by this AMOUNT. (default 13)" },
         {"reverse", 'r',    0,      0,  "Reverse shift (right shift)." },
-        {"reverse", 'o',    "f",      0,  "Reverse shift (right shift)." },
-//        {"direct",  'o',    "FILE", 0,  "Output to FILE instead of standard output" },
         { 0 }
 };
 
@@ -59,40 +59,54 @@ struct arguments
 {
     long int shift;
     int reverse;
-    char *output_file;
+    char **strings;               /* [FILE…] */
 };
 
-//static long parseLong(const char *str)
-//{
-//    errno = 0;
-//    char *temp;
-//    long val = strtol(str, &temp, 0);
-//
-//    if (temp == str || *temp != '\0' ||
-//        ((val == LONG_MIN || val == LONG_MAX) && errno == ERANGE))
-//        fprintf(stderr, "Could not convert '%s' to long and leftover string is: '%s'\n",
-//                str, temp);
-//    return val;
-//}
+/**
+ * @brief Error handling for strtol().
+ */
+int parseLong(const char *str, long *ret)
+{
+    errno = 0;
+    char *temp;
+    long val = strtol(str, &temp, 0);
 
-/* Parse a single option. */
+    if (temp == str || *temp != '\0' ||
+        ((val == LONG_MIN || val == LONG_MAX) && errno == ERANGE))
+        return 1;   //Failed to convert to int
+    *ret = val;
+    return 0;
+}
+
+/**
+ * @brief Parse a single option.
+ */
 static error_t
 parse_opt (int key, char *arg, struct argp_state *state)
 {
     /* Get the input argument from argp_parse, which we
        know is a pointer to our arguments structure. */
+    long ret, arg_int;
     struct arguments *arguments = state->input;
     switch (key)
     {
         case 's':
-            arguments->shift = strtol(arg, 0, 10);
-            return EINVAL;
+            ret = parseLong(arg, &arg_int);
+            if(ret) {
+                // Print error and exit()
+                argp_error(state, "%s", strerror(EINVAL));
+            }
+            arguments->shift = arg_int;
             break;
         case 'r':
             arguments->reverse = 1;
             break;
-        case 'o':
-            arguments->output_file = arg;
+        case ARGP_KEY_ARG:
+            printf("ARG\n");
+            printf("%d!!\n",state->next);
+            printf("%s\n",state->argv[state->next-1]);
+            arguments->strings = &state->argv[state->next-1];
+            state->next = state->argc;
             break;
         default:
             return ARGP_ERR_UNKNOWN;
@@ -100,7 +114,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
     return 0;
 }
 
-static struct argp argp = { options, parse_opt, 0, doc };
+static struct argp argp = { options, parse_opt, args_doc, doc };
 
 char c;
 int main (int argc, char **argv)
@@ -110,9 +124,17 @@ int main (int argc, char **argv)
     };
     error_t ret = argp_parse(&argp, argc, argv, 0, 0, &arguments);
     if(ret) {
-        fprintf(stderr, "%s: %s\n", argv[0], strerror(ret));
-        fprintf(stderr, "Try `ROT13 --help' or `ROT13 --usage' for more information.\n");
-        return errno;
+        fprintf(stderr, "%s: Unknown error during parsing argument: %s\n", argv[0], strerror(ret));
+        return EXIT_FAILURE;
+    }
+
+    /* Optional File Name */
+    int j;
+    if (arguments.strings) {
+        printf ("STRINGS = ");
+        for (j = 0; arguments.strings[j]; j++)
+            printf(j == 0 ? "%s" : ", %s", arguments.strings[j]);
+        printf("\n");
     }
 
     printf("Shift=%ld, Reverse=%d\n", arguments.shift, arguments.reverse);
@@ -148,7 +170,7 @@ int main (int argc, char **argv)
         printf("%c", c);
     } while (1);
     // Exit cleanly
-    return 0;
+    return EXIT_SUCCESS;
 
 }
 
