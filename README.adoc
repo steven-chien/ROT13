@@ -1,24 +1,6 @@
 = Linux System Programming - Rotate by 13 places (ROT13)
 A small program that performs rotate by 13 places ``encryption''.
 
-== Usage
-----
-Usage: ROT13 [OPTION...] [FILE...]
-ROT13 -- Rotate by 13 places encryption
-
-  -r, --reverse              Reverse shift (right shift).
-  -s, --shift=AMOUNT         Shift by this AMOUNT. (default 13)
-  -?, --help                 Give this help list
-      --usage                Give a short usage message
-  -V, --version              Print program version
-
-Mandatory or optional arguments to long options are also mandatory or optional
-for any corresponding short options.
-
-Report bugs to Star Poon <oneonestar@gmail.com>.
-----
-TIP: If no FILE provided, program will read standard input.
-
 == Compile & Run
 [source,bash]
 ----
@@ -28,3 +10,34 @@ $ mkdir build
 $ cmake ..
 $ make
 $ ./ROT13
+----
+
+== Usage
+----
+Usage: ROT13 [OPTION...] [FILE...]
+
+ROT13 -- Rotate by 13 places encryption
+
+  -r, --reverse              Reverse shift (right shift)
+  -s, --shift=AMOUNT         Shift by this AMOUNT (default 13)
+  -v, --verbose              Verbose Mode
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
+  -V, --version              Print program version
+
+Mandatory or optional arguments to long options are also mandatory or optional
+for any corresponding short options.
+----
+TIP: If no FILE provided, program will read from standard input.
+
+== Example
+[source,bash]
+----
+$ ./ROT13                       #left shift of 13, reading from stdin
+$ ./ROT13 -s 10                 #left shift of 10
+$ ./ROT13 -r -s 8               #right shift of 8
+$ ./ROT13 Makefile              #encrypt the Makefile, output as Makefile.out
+----
+
+== Bugs & Feedback
+Report bugs to Star Poon <oneonestar@gmail.com>.
