@@ -29,7 +29,7 @@
 #include <string.h>
 #include <argp.h>
 
-/* Print --version. */
+// Print --version
 const char *argp_program_version =
 "ROT13 1.0.0\n\
 Copyright (C) 2015 Star Poon\n\
@@ -39,16 +39,18 @@ There is NO WARRANTY, to the extent permitted by law.\n\
 \n\
 Written by Star Poon.";
 
-/* Print --help. */
+// Print --help
 const char *argp_program_bug_address =
   "Star Poon <oneonestar@gmail.com>";
 
-/* A descriptive string about this program. */
+// A descriptive string about this program.
 static char doc[] =
   "ROT13 -- Rotate by 13 places encryption";
 
+// Optional file name
 static char args_doc[] = "[FILE...]";
 
+// The options that are allowed
 static struct argp_option options[] = {
         {"shift",   's',    "AMOUNT",      0,  "Shift by this AMOUNT (default 13)" },
         {"reverse", 'r',    0,      0,  "Reverse shift (right shift)" },
@@ -56,16 +58,19 @@ static struct argp_option options[] = {
         { 0 }
 };
 
-/* Used by main to communicate with parse_opt. */
+// Used by main to communicate with parse_opt
 struct arguments
 {
     long int shift;
     int reverse, verbose;
     char **strings;               /* [FILE…] */
 };
+static struct arguments arguments = {
+        .shift = 13
+};
 
 /**
- * @brief Error handling for strtol().
+ * @brief Error handling for strtol(). strtol() is the safe version of atoi().
  */
 int parseLong(const char *str, long *ret)
 {
@@ -95,7 +100,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
         case 's':
             ret = parseLong(arg, &arg_int);
             if(ret) {
-                // Print error and exit()
+                // Cannot convert arg to number, print error and exit()
                 argp_error(state, "%s", strerror(EINVAL));
             }
             arguments->shift = arg_int;
@@ -116,11 +121,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
     return 0;
 }
 
-static struct argp argp = { options, parse_opt, args_doc, doc };
-static struct arguments arguments = {
-        .shift = 13
-};
-
+/**
+ * @brief The actual convertion algorithm
+ */
 int convert_file(FILE *inFile, FILE *outFile)
 {
     do {
@@ -164,9 +167,13 @@ int convert_file(FILE *inFile, FILE *outFile)
     return 0;
 }
 
+// Used by argp
+static struct argp argp = { options, parse_opt, args_doc, doc };
+
 char c;
 int main (int argc, char **argv)
 {
+    // Calling the argp lib to handle the arguments
     error_t ret = argp_parse(&argp, argc, argv, 0, 0, &arguments);
     if(ret) {
         fprintf(stderr, "%s: Unknown error during parsing argument: %s\n", argv[0], strerror(ret));
@@ -179,7 +186,6 @@ int main (int argc, char **argv)
     if (arguments.strings) {
         // Provided File Name -> Convert files
         for (int j = 0; arguments.strings[j]; j++) {
-
             FILE *inFile, *outFile;
             inFile = fopen (arguments.strings[j],"r");
             if(!inFile) {
@@ -188,6 +194,7 @@ int main (int argc, char **argv)
             }
             char temp_file_name[] = "fileXXXXXX";
 
+            // We use mkstemp() because tmpnam() is not safe.
             int temp_fd = mkstemp(temp_file_name);
             outFile = fdopen(temp_fd, "w");
             if(!outFile) {
@@ -210,6 +217,7 @@ int main (int argc, char **argv)
             // file name.  Use dynamic allocation instead.
             // I doubt that but we just follow it here.
             char *final_output = malloc(strlen(arguments.strings[j])+4);
+            // Output as ori_filename.out
             snprintf(final_output, FILENAME_MAX, "%s.out", arguments.strings[j]);
             remove(final_output);
             rename(temp_file_name, final_output);
