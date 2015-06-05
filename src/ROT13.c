@@ -50,8 +50,9 @@ static char doc[] =
 static char args_doc[] = "[FILE...]";
 
 static struct argp_option options[] = {
-        {"shift",   's',    "AMOUNT",      0,  "Shift by this AMOUNT. (default 13)" },
-        {"reverse", 'r',    0,      0,  "Reverse shift (right shift)." },
+        {"shift",   's',    "AMOUNT",      0,  "Shift by this AMOUNT (default 13)" },
+        {"reverse", 'r',    0,      0,  "Reverse shift (right shift)" },
+        {"verbose", 'v',    0,      0,  "Verbose Mode" },
         { 0 }
 };
 
@@ -59,7 +60,7 @@ static struct argp_option options[] = {
 struct arguments
 {
     long int shift;
-    int reverse;
+    int reverse, verbose;
     char **strings;               /* [FILE…] */
 };
 
@@ -101,6 +102,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
             break;
         case 'r':
             arguments->reverse = 1;
+            break;
+        case 'v':
+            arguments->verbose = 1;
             break;
         case ARGP_KEY_ARG:
             arguments->strings = &state->argv[state->next-1];
@@ -168,6 +172,9 @@ int main (int argc, char **argv)
         fprintf(stderr, "%s: Unknown error during parsing argument: %s\n", argv[0], strerror(ret));
         return EXIT_FAILURE;
     }
+    if (arguments.verbose) {
+        printf("Shift=%ld, Reverse=%d\n", arguments.shift, arguments.reverse);
+    }
 
     if (arguments.strings) {
         // Provided File Name -> Convert files
@@ -183,7 +190,6 @@ int main (int argc, char **argv)
 
             int temp_fd = mkstemp(temp_file_name);
             outFile = fdopen(temp_fd, "w");
-            printf("TempFile = %s\n", temp_file_name);
             if(!outFile) {
                 fprintf(stderr, "%s: Failed to create temp file: %s\n", argv[0], strerror(errno));
                 return EXIT_FAILURE;
@@ -207,14 +213,16 @@ int main (int argc, char **argv)
             snprintf(final_output, FILENAME_MAX, "%s.out", arguments.strings[j]);
             remove(final_output);
             rename(temp_file_name, final_output);
+            if (arguments.verbose) {
+                printf("Converting %s\n", arguments.strings[j]);
+                printf("Output as %s\n", final_output);
+            }
             free(final_output);
         }
     } else {
         // No file name provided -> Convert stdin
         convert_file(stdin, stdout);
     }
-
-    printf("Shift=%ld, Reverse=%d\n", arguments.shift, arguments.reverse);
 
     // Exit cleanly
     return EXIT_SUCCESS;
