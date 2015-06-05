@@ -102,9 +102,6 @@ parse_opt (int key, char *arg, struct argp_state *state)
             arguments->reverse = 1;
             break;
         case ARGP_KEY_ARG:
-            printf("ARG\n");
-            printf("%d!!\n",state->next);
-            printf("%s\n",state->argv[state->next-1]);
             arguments->strings = &state->argv[state->next-1];
             state->next = state->argc;
             break;
@@ -129,8 +126,8 @@ int main (int argc, char **argv)
     }
 
     /* Optional File Name */
-    int j;
     if (arguments.strings) {
+        int j;
         printf ("STRINGS = ");
         for (j = 0; arguments.strings[j]; j++)
             printf(j == 0 ? "%s" : ", %s", arguments.strings[j]);
@@ -148,21 +145,34 @@ int main (int argc, char **argv)
         }
 
         // Is the character lower case?
-        if ((c >= 'a') && (c <= 'z')) {
-            // Yes, let's make it upper case
-            c -= 32;
-        }
+//        if ((c >= 'a') && (c <= 'z')) {
+//            // Yes, let's make it upper case
+//            c = arguments.reverse? c+arguments.shift: c-arguments.shift;
+//        }
 
         // Encrypt
         if (c >='A' && c<='Z') {
             // Shift
-            c -= 3;;
+            c = arguments.reverse? c+arguments.shift: c-arguments.shift;
 
             // Range check
             if (c > 'Z') {
                 c -= 26;
             }
             else if (c < 'A') {
+                c += 26;
+            }
+        }
+
+        if (c >='a' && c<='z') {
+            // Shift
+            c = arguments.reverse? c+arguments.shift: c-arguments.shift;
+
+            // Range check
+            if (c > 'z') {
+                c -= 26;
+            }
+            else if (c < 'a') {
                 c += 26;
             }
         }
