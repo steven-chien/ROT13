@@ -24,6 +24,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+
 #include <errno.h>
 #include <string.h>
 #include <argp.h>
@@ -112,43 +113,20 @@ parse_opt (int key, char *arg, struct argp_state *state)
 }
 
 static struct argp argp = { options, parse_opt, args_doc, doc };
+static struct arguments arguments = {
+        .shift = 13
+};
 
-char c;
-int main (int argc, char **argv)
+int convert_file(FILE *inFile, FILE *outFile)
 {
-    struct arguments arguments = {
-            .shift = 13
-    };
-    error_t ret = argp_parse(&argp, argc, argv, 0, 0, &arguments);
-    if(ret) {
-        fprintf(stderr, "%s: Unknown error during parsing argument: %s\n", argv[0], strerror(ret));
-        return EXIT_FAILURE;
-    }
-
-    /* Optional File Name */
-    if (arguments.strings) {
-        int j;
-        printf ("STRINGS = ");
-        for (j = 0; arguments.strings[j]; j++)
-            printf(j == 0 ? "%s" : ", %s", arguments.strings[j]);
-        printf("\n");
-    }
-
-    printf("Shift=%ld, Reverse=%d\n", arguments.shift, arguments.reverse);
     do {
         // Read a character from stdin
-        c = fgetc(stdin);
+        int c = fgetc(inFile);
         // End of file? Nothing left to read...
-        if (feof(stdin)) {
+        if (feof(inFile)) {
             // Exit loop
             break;
         }
-
-        // Is the character lower case?
-//        if ((c >= 'a') && (c <= 'z')) {
-//            // Yes, let's make it upper case
-//            c = arguments.reverse? c+arguments.shift: c-arguments.shift;
-//        }
 
         // Encrypt
         if (c >='A' && c<='Z') {
@@ -177,8 +155,67 @@ int main (int argc, char **argv)
             }
         }
         // Print the character to stdout (default)
-        printf("%c", c);
+        fprintf(outFile, "%c", c);
     } while (1);
+    return 0;
+}
+
+char c;
+int main (int argc, char **argv)
+{
+    error_t ret = argp_parse(&argp, argc, argv, 0, 0, &arguments);
+    if(ret) {
+        fprintf(stderr, "%s: Unknown error during parsing argument: %s\n", argv[0], strerror(ret));
+        return EXIT_FAILURE;
+    }
+
+    if (arguments.strings) {
+        // Provided File Name -> Convert files
+        for (int j = 0; arguments.strings[j]; j++) {
+
+            FILE *inFile, *outFile;
+            inFile = fopen (arguments.strings[j],"r");
+            if(!inFile) {
+                fprintf(stderr, "%s: Failed to open file '%s': %s\n", argv[0], arguments.strings[j], strerror(errno));
+                return EXIT_FAILURE;
+            }
+            char temp_file_name[] = "fileXXXXXX";
+
+            int temp_fd = mkstemp(temp_file_name);
+            outFile = fdopen(temp_fd, "w");
+            printf("TempFile = %s\n", temp_file_name);
+            if(!outFile) {
+                fprintf(stderr, "%s: Failed to create temp file: %s\n", argv[0], strerror(errno));
+                return EXIT_FAILURE;
+            }
+            convert_file(inFile, outFile);
+
+            fclose(inFile);
+            fclose(outFile);
+
+            // "filename"+".out" as the output
+            if (strlen(arguments.strings[j])+4>=FILENAME_MAX) {
+                // if "filename"+".out" is too long, just clean up and terminate the program.
+                remove(temp_file_name);
+                return EXIT_FAILURE;
+            }
+
+            // According to GCC standard, we shouldn't use FILENAME_MAX as the size of an array in which to store a
+            // file name.  Use dynamic allocation instead.
+            // I doubt that but we just follow it here.
+            char *final_output = malloc(strlen(arguments.strings[j])+4);
+            snprintf(final_output, FILENAME_MAX, "%s.out", arguments.strings[j]);
+            remove(final_output);
+            rename(temp_file_name, final_output);
+            free(final_output);
+        }
+    } else {
+        // No file name provided -> Convert stdin
+        convert_file(stdin, stdout);
+    }
+
+    printf("Shift=%ld, Reverse=%d\n", arguments.shift, arguments.reverse);
+
     // Exit cleanly
     return EXIT_SUCCESS;
 
