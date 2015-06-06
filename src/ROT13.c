@@ -61,8 +61,7 @@ static struct argp_option options[] = {
 // Used by main to communicate with parse_opt
 struct arguments
 {
-    long int shift;
-    int reverse, verbose;
+    int shift, reverse, verbose;
     char **strings;               /* [FILE…] */
 };
 static struct arguments arguments = {
@@ -72,7 +71,7 @@ static struct arguments arguments = {
 /**
  * @brief Error handling for strtol(). strtol() is the safe version of atoi().
  */
-int parseLong(const char *str, long *ret)
+int parseLong(const char *str, int *ret)
 {
     errno = 0;
     char *temp;
@@ -81,7 +80,7 @@ int parseLong(const char *str, long *ret)
     if (temp == str || *temp != '\0' ||
         ((val == LONG_MIN || val == LONG_MAX) && errno == ERANGE))
         return 1;   //Failed to convert to int
-    *ret = val;
+    *ret = (int)val;
     return 0;
 }
 
@@ -93,7 +92,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
 {
     /* Get the input argument from argp_parse, which we
        know is a pointer to our arguments structure. */
-    long ret, arg_int;
+    int ret, arg_int;
     struct arguments *arguments = state->input;
     switch (key)
     {
@@ -180,7 +179,7 @@ int main (int argc, char **argv)
         return EXIT_FAILURE;
     }
     if (arguments.verbose) {
-        printf("Shift=%ld, Reverse=%d\n", arguments.shift, arguments.reverse);
+        printf("Shift=%d, Reverse=%d\n", arguments.shift, arguments.reverse);
     }
 
     if (arguments.strings) {
