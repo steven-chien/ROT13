@@ -3,6 +3,8 @@
 A small program that performs rotate by 13 places ``encryption''.
 
 == Compile & Run
+Compile executable. You should have a +gnu11+ compatible compiler
+(eg. Clang).
 [source,bash]
 ----
 $ git clone https://github.com/oneonestar/LSP_ROT13.git
@@ -11,6 +13,17 @@ $ mkdir build
 $ cmake ..
 $ make
 $ ./ROT13
+----
+
+Compile document
+You need to install `asciidoc` and `asciidoctor`.
+[source,bash]
+----
+$ cd ../doc
+# Generate manpage
+$ a2x --doctype manpage --format manpage ROT13.1.adoc
+# Generate html manpage
+$ asciidoctor -d manpage ROT13.1.adoc
 ----
 
 == Usage

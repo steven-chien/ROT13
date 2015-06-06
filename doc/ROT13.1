@@ -1,0 +1,107 @@
+'\" t
+.\"     Title: rot13
+.\"    Author: [see the "AUTHOR" section]
+.\" Generator: DocBook XSL Stylesheets v1.78.1 <http://docbook.sf.net/>
+.\"      Date: 06/06/2015
+.\"    Manual: \ \&
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "ROT13" "1" "06/06/2015" "\ \&" "\ \&"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+ROT13 \- Rotate by 13 places encryption
+.SH "SYNOPSIS"
+.sp
+\fBROT13\fR [\fIOPTIONS\fR] [\fIFILE\fR\&...]
+.SH "DESCRIPTION"
+.sp
+The ROT13(1) command encrypt the file and output it as \fIfile\&.out\fR\&. If no filename is provided, it will read from stdin and output to stdout\&. (see \fBEXAMPLES\fR)\&.
+.SH "OPTIONS"
+.PP
+\fB\-r, \-\-reverse\fR
+.RS 4
+Reverse shift\&. The default shift direction is left shift\&. This option set the program to perform right shift instead\&.
+.RE
+.PP
+\fB\-s, \-\-shift\fR=\fIAMOUNT\fR
+.RS 4
+Shift by this AMOUNT, the default AMOUNT is 13\&.
+.RE
+.PP
+\fB\-v, \-\-verbose\fR
+.RS 4
+Verbosely print processing information\&.
+.RE
+.PP
+\fB\-?, \-\-help\fR
+.RS 4
+Display help list\&.
+.RE
+.PP
+\fB\-V, \-\-version\fR
+.RS 4
+Print program version\&.
+.RE
+.SH "EXAMPLES"
+.PP
+\fBROT13\fR
+.RS 4
+Left shift of 13, reading from stdin
+.RE
+.PP
+\fBROT13 \-s 10\fR
+.RS 4
+Left shift of 10
+.RE
+.PP
+\fBROT13 \-r \-s 8\fR
+.RS 4
+Right shift of 8
+.RE
+.PP
+\fBROT13 Makefile\fR
+.RS 4
+Encrypt the Makefile, output as Makefile\&.out
+.RE
+.SH "EXIT STATUS"
+.PP
+\fB0\fR
+.RS 4
+Success
+.RE
+.PP
+\fB1\fR
+.RS 4
+Failure (syntax or usage error; configuration error; document processing failure; unexpected error)\&.
+.RE
+.SH "BUGS"
+.sp
+N/A\&.
+.SH "AUTHOR"
+.sp
+Written by Star Poon <oneonestar@gmail\&.com>
+.SH "RESOURCES"
+.sp
+Source code: https://github\&.com/oneonestar/LSP_ROT13
+.SH "COPYING"
+.sp
+Copyright (C) 2015 Star Poon\&. License GPLv3+: GNU GPL version 3 or later http://gnu\&.org/licenses/gpl\&.html\&. This is free software: you are free to change and redistribute it\&. There is NO WARRANTY, to the extent permitted by law\&.
