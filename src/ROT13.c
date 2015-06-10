@@ -68,6 +68,16 @@ static struct arguments arguments = {
         .shift = 13
 };
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  mod
+ *  Description:  Simple implementation of mod operator
+ * =====================================================================================
+ */
+unsigned mod(int a, unsigned b) {
+	return (a >= 0 ? a % b : b - (-a) % b);
+}
+
 /**
  * @brief Error handling for strtol(). strtol() is the safe version of atoi().
  */
