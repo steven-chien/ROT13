@@ -1,0 +1,91 @@
+ROT13(1)
+========
+:doctype: manpage
+
+
+NAME
+----
+ROT13 - Rotate by 13 places encryption
+
+
+SYNOPSIS
+--------
+*ROT13* ['OPTIONS'] ['FILE'...]
+
+
+DESCRIPTION
+-----------
+The ROT13(1) command encrypt the file and output it as 'file.out'. If
+no filename is provided, it will read from stdin and output to stdout.
+(see <<X1,*EXAMPLES*>>).
+
+
+OPTIONS
+-------
+*-r, --reverse*::
+    Reverse shift. The default shift direction is left shift. This option
+    set the program to perform right shift instead.
+
+*-s, --shift*='AMOUNT'::
+    Shift by this AMOUNT, the default AMOUNT is 13.
+
+*-v, --verbose*::
+    Verbosely print processing information.
+
+*-?, --help*::
+    Display help list.
+
+*-V, --version*::
+    Print program version.
+
+
+[[X1]]
+EXAMPLES
+--------
+  *ROT13*::
+Left shift of 13, reading from stdin
+
+  *ROT13 -s 10*::
+Left shift of 10
+
+  *ROT13 -r -s 8*::
+Right shift of 8
+
+  *ROT13 Makefile*::
+Encrypt the Makefile, output as Makefile.out
+
+
+
+EXIT STATUS
+-----------
+*0*::
+    Success
+
+*1*::
+    Failure (syntax or usage error; configuration error; document
+    processing failure; unexpected error).
+
+
+BUGS
+----
+N/A.
+
+
+AUTHOR
+------
+Written by Star Poon <oneonestar@gmail.com>
+
+
+RESOURCES
+---------
+Source code: <https://github.com/oneonestar/LSP_ROT13>
+
+
+COPYING
+-------
+Copyright \(C) 2015 Star Poon.  License GPLv3+: GNU GPL version 3 or later
+<http://gnu.org/licenses/gpl.html>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+
