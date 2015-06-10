@@ -135,7 +135,7 @@ int convert_file(FILE *inFile, FILE *outFile)
         }
 
         // Encrypt
-        if (c >='A' && c<='Z') {
+        if (isupper(c)) {
             // Shift
             c = arguments.reverse? c+arguments.shift: c-arguments.shift;
 
@@ -148,7 +148,7 @@ int convert_file(FILE *inFile, FILE *outFile)
             }
         }
 
-        if (c >='a' && c<='z') {
+        if (islower(c)) {
             // Shift
             c = arguments.reverse? c+arguments.shift: c-arguments.shift;
 
